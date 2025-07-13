@@ -1,2 +1,8 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+	import '../app.css';
+	import App from './App.svelte';
+
+	const theme = 'dark'; // or 'light'
+</script>
+
+<App />
