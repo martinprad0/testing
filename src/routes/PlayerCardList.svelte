@@ -61,7 +61,7 @@
     // Constants
     const containerWidth = "100%";
     const containerHeight = "300px";
-    const itemWidth = "120px";
+    const itemWidth = "45vw";
     const itemHeight = "80px";
     const flipDurationMs = 300;
 
