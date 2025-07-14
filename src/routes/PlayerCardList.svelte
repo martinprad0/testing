@@ -45,6 +45,10 @@
         newPlayer.name = "Nuevo";
         newPlayer.info = {};
 
+        for (const key of Object.keys(players[0].info)) {
+            newPlayer.info[key] = "";
+        }
+
         players = [...players, newPlayer];
         items = [
             { id: crypto.randomUUID(), player_id: newPlayer.id },
@@ -55,7 +59,7 @@
     // Constants
     const containerWidth = "100%";
     const itemWidth = "270px";
-    const flipDurationMs = 100;
+    const flipDurationMs = 300;
 
     // Event handler
     function sortItems() {
@@ -80,15 +84,14 @@
         >
         <Search placeholder="Search..." bind:value={searchQuery} oninput={(e) => sortItems()}  />
     </div>
-    <section
+    <section class="scroll-grid"
         style="--item-width: {itemWidth}; --container-width: {containerWidth};"
-        class="scroll-grid"
-        use:dndzone={{ items, flipDurationMs }}
+        use:dndzone={{ items, flipDurationMs, morphDisabled: true }}
         onconsider={handleDndConsider}
         onfinalize={handleDndFinalize}
     >
         {#each items as item (item.id)}
-            <div
+            <div class="playerCard"
                 style="width: {itemWidth}; height: 120px; position: relative; z-index: 1"
                 animate:flip={{ duration: flipDurationMs }}
             >
@@ -117,7 +120,10 @@
         border: 1px solid greenyellow;
         overflow-x: auto;
     }
-    div {
-        border: 1px solid red;
+    .playerCard {
+        background-color: var(--color-primary-800);
+        color: var(--color-primary-50);
+        border-radius: 0.5em;
+        overflow: hidden;
     }
 </style>

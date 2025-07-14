@@ -35,6 +35,7 @@
 		]
 	},
 	"dependencies": {
+		"@xyflow/svelte": "^1.2.2",
 		"svelte-dnd-action": "^0.9.63"
 	}
 }

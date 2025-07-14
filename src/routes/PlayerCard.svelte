@@ -115,7 +115,7 @@
     }
     .playerCard .handle {
         height: 40%;
-        background-color: grey;
+        background-color: var(--color-primary-800);
         display: flex;
         text-align: center;
         justify-content: space-between;
@@ -125,8 +125,9 @@
 
     .playerCard .content {
         height: 60%;
-        border: 1px solid blue;
+        /* border: 1px solid blue; */
         margin: 0 0em;
         overflow: auto;
+        background-color: var(--color-primary-900);
     }
 </style>
