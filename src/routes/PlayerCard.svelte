@@ -13,18 +13,21 @@
 
     /** @type {{ id?: number, name?: string, info?: any, level?: number, score?: number }} */
     let {
+        item = ([]),
+        currentlyFocused = 0,
         player = $bindable(),
         oncopy = () => {},
         ondelete = () => {},
         expanded = $bindable(false),
     } = $props();
     let edit_mode = $state(false);
+
 </script>
 
-<div class="playerCard">
+<div class="playerCard" style="--height:{`${100*(expanded?2:1)}%`}; --width:{`${100*(expanded?1.5:1)}%`}">
     <!-- Handle Elements -->
     <div
-        class="handle flex items-center gap-2"
+        class="handle flex items-center gap-2" style="--height:{`${20*(expanded?1:2)}%`}"
         aria-label="drag-handle for {player.text}"
     >
         <!-- Player Info -->
@@ -90,7 +93,7 @@
             </Button>
         </div>
     </div>
-    <div class="content">
+    <div class="content" style="--height:{`${60*(expanded?2:1)}%`}">
         {#each Object.entries(player.info) as [key, val]}
             <div class="flex items-center gap-2 my-2">
                 <span class="font-medium dark:text-white">{key}:</span>
@@ -110,11 +113,14 @@
 
 <style>
     .playerCard {
-        width: 100%;
-        height: 100%;
+        width: var(--width);
+        height: var(--height);
+        font-size: 12px;
+        border-radius: 0.5em;
+        overflow: hidden;
     }
     .playerCard .handle {
-        height: 40%;
+        height: var(--height);
         background-color: var(--color-primary-800);
         display: flex;
         text-align: center;
@@ -124,7 +130,7 @@
     }
 
     .playerCard .content {
-        height: 60%;
+        height: var(--height);
         /* border: 1px solid blue; */
         margin: 0 0em;
         overflow: auto;

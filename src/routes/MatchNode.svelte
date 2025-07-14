@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Position, useSvelteFlow, type NodeProps } from "@xyflow/svelte";
+    import { fade } from 'svelte/transition';
+    import { Handle, Position, useSvelteFlow, type NodeProps } from "@xyflow/svelte";
 
     // Reactive Variables
     interface Item {
@@ -10,6 +11,9 @@
     let { data }: NodeProps = $props();
     let players: any[] = (data as any).players ?? [];
     let items = $state(((data as any).items ?? []) as Item[]);
+    let position = data.position;
+    let level = data.level;
+    let id = data.id;
 
     function playerIndices(player_id) {
         return players.findIndex((player) => player.id === player_id);
@@ -33,11 +37,17 @@
     const matchWidth = "200px";
     const playerHeight = "50px";
     const flipDurationMs = 100;
+
+    let borderStyle = $derived(items.length > 0 ? '' : 'box-sizing: border-box; border: 1px solid blue')
 </script>
 
+<Handle type="target" position={Position.Left} />
+<Handle type="source" position={Position.Right} />
+
+<p>{id}</p>
 <section
     class="match"
-    style="--player-height: {playerHeight}; --container-width: {matchWidth};"
+    style="--player-height: {playerHeight}; --container-width: {matchWidth}; {borderStyle}"
     use:dndzone={{ items, flipDurationMs, morphDisabled: true }}
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
@@ -48,6 +58,7 @@
             class="player"
             style="--player-height: {playerHeight};"
             animate:flip={{ duration: flipDurationMs }}
+            in:fade={{duration: 1000}}
         >
             {player.name}
         </div>
@@ -56,16 +67,21 @@
 
 <style>
     .match {
+        
         min-height: var(--player-height);
-        width: var(--container-width);
+        min-width: var(--container-width);
         gap: 0em;
-        padding: 0 0 calc(var(--player-height)*0.8) 0;
-        border: 1px solid blue;
+        padding: 0 0 calc(var(--player-height)*0.5) 0;
+        /* border: 1px solid blue; */
     }
     .player {
+        border-bottom: 1px solid black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         position: relative;
         z-index: 1;
-        border: 1px solid red;
+        /* border: 1px solid red; */
         width: 100%;
         height: var(--player-height);
         background-color: var(--color-primary-800);

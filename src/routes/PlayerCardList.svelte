@@ -39,6 +39,10 @@
         items = items.filter((item) => item.player_id !== target_player.id);
     }
 
+    function expandItem(item) {
+        
+    }
+
     function addNewPlayer() {
         let newPlayer = {};
         newPlayer.id = players.length + 1;
@@ -58,8 +62,14 @@
 
     // Constants
     const containerWidth = "100%";
-    const itemWidth = "270px";
+    const containerHeight = "300px"
+    const itemWidth = "200px";
+    const itemHeight = "80px"
     const flipDurationMs = 300;
+
+    // Focus Management
+    let zindex = 1;
+    let currentlyFocused = $state(0);
 
     // Event handler
     function sortItems() {
@@ -85,18 +95,24 @@
         <Search placeholder="Search..." bind:value={searchQuery} oninput={(e) => sortItems()}  />
     </div>
     <section class="scroll-grid"
-        style="--item-width: {itemWidth}; --container-width: {containerWidth};"
+        style="--item-width: {itemWidth}; --item-height: {itemHeight}; --container-width: {containerWidth}; --container-height: {containerHeight}"
         use:dndzone={{ items, flipDurationMs, morphDisabled: true }}
         onconsider={handleDndConsider}
         onfinalize={handleDndFinalize}
     >
         {#each items as item (item.id)}
             <div class="playerCard"
-                style="width: {itemWidth}; height: 120px; position: relative; z-index: 1"
+                style="width: {itemWidth}; height: {itemHeight}; position: relative; z-index: 1"
                 animate:flip={{ duration: flipDurationMs }}
+                role="button"
+	            tabindex="0"
+                onclick={(e) => {e.currentTarget.style.zIndex = `${++zindex}`; currentlyFocused = item.id}}
+                onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()}
             >
                 <PlayerCard
                     bind:player={players[playerIndices(item.player_id)]}
+                    {currentlyFocused}
+                    {item}
                     oncopy={copyItem}
                     ondelete={deleteItem}
                 />
@@ -112,18 +128,15 @@
             auto-fill,
             minmax(var(--item-width), 0.5em)
         );
-        grid-auto-rows: 120px;
+        grid-auto-rows: var(--item-height);
         width: var(--container-width);
-        height: 350px;
+        height: var(--container-height);
         gap: 0.5em;
         padding: 0.3em;
         border: 1px solid greenyellow;
         overflow-x: auto;
     }
     .playerCard {
-        background-color: var(--color-primary-800);
-        color: var(--color-primary-50);
         border-radius: 0.5em;
-        overflow: hidden;
     }
 </style>
