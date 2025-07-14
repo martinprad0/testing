@@ -13,7 +13,7 @@
 
     /** @type {{ id?: number, name?: string, info?: any, level?: number, score?: number }} */
     let {
-        item = ([]),
+        item = [],
         currentlyFocused = 0,
         player = $bindable(),
         oncopy = () => {},
@@ -21,17 +21,20 @@
         expanded = $bindable(false),
     } = $props();
     let edit_mode = $state(false);
-
 </script>
 
-<div class="playerCard" style="--height:{`${100*(expanded?2:1)}%`}; --width:{`${100*(expanded?1.5:1)}%`}">
+<div
+    class="playerCard"
+    style="--height:{`${100 * (expanded ? 2 : 1)}%`}; --width:{`${100 * (expanded ? 2 : 1)}%`}"
+>
     <!-- Handle Elements -->
     <div
-        class="handle flex items-center gap-2" style="--height:{`${20*(expanded?1:2)}%`}"
+        class="handle"
+        style="--height:{`${20 * (expanded ? 1 : 2)}%`}"
         aria-label="drag-handle for {player.text}"
     >
-        <!-- Player Info -->
-        <div class="flex items-center gap-2">
+        <!-- Player Name -->
+        <div class="flex items-center gap-2 w-1/2">
             <Badge>{player.id}</Badge>
             {#if !edit_mode}
                 <p
@@ -49,10 +52,11 @@
                     }}
                 />
             {/if}
+            
         </div>
 
         <!-- Buttons -->
-        <div class="ml-auto flex gap-2">
+        <div class="justify-end flex gap-2 w-full">
             {#if edit_mode}
                 <Button class="p-2!" onclick={() => oncopy?.(player)}>
                     <FileCopyOutline class="h-4 w-4" />
@@ -93,21 +97,21 @@
             </Button>
         </div>
     </div>
-    <div class="content" style="--height:{`${60*(expanded?2:1)}%`}">
+    <div class="content" style="--height:{`${60 * (expanded ? 2 : 1)}%`}">
         {#each Object.entries(player.info) as [key, val]}
             <div class="flex items-center gap-2 my-2">
                 <span class="font-medium dark:text-white">{key}:</span>
                 {#if edit_mode}
-                <Input
-                    clearable
-                    bind:value={player.info[key]}
-                    class="flex-1"
-                />
+                    <Input
+                        clearable
+                        bind:value={player.info[key]}
+                        class="flex-1"
+                    />
                 {:else}
-                <span class="dark:text-white flex-1 truncate">{val}</span>
+                    <span class="dark:text-white flex-1 truncate">{val}</span>
                 {/if}
             </div>
-            {/each}
+        {/each}
     </div>
 </div>
 
@@ -126,7 +130,7 @@
         text-align: center;
         justify-content: space-between;
         gap: 0.25rem;
-        padding-right: 5%;
+        padding: 0 2% 0 3%;
     }
 
     .playerCard .content {

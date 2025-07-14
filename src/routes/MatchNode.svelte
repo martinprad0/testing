@@ -60,7 +60,11 @@
             animate:flip={{ duration: flipDurationMs }}
             in:fade={{duration: 1000}}
         >
-            {player.name}
+            <p
+                    class="truncate font-semibold dark:text-white bg-transparent outline-none"
+                >
+                    {player.name}
+                </p>
         </div>
     {/each}
 </section>
