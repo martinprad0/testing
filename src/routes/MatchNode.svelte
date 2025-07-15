@@ -10,6 +10,7 @@
 
     let { data }: NodeProps = $props();
     let players: any[] = (data as any).players ?? [];
+    $inspect(players)
     let items = $state(((data as any).items ?? []) as Item[]);
     let position = data.position;
     let level = data.level;
@@ -44,7 +45,6 @@
 <Handle type="target" position={Position.Left} />
 <Handle type="source" position={Position.Right} />
 
-<p>{id}</p>
 <section
     class="match"
     style="--player-height: {playerHeight}; --container-width: {matchWidth}; {emptyStyle}"
@@ -75,7 +75,7 @@
         min-height: var(--player-height);
         min-width: var(--container-width);
         gap: 0em;
-        padding: 0 0 calc(var(--player-height)*0.5) 0;
+        padding: calc(var(--player-height)*0.5) 0 calc(var(--player-height)*0.5) 0;
         /* border: 1px solid blue; */
     }
     .player {

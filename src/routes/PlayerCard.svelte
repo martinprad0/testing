@@ -67,7 +67,6 @@
                     class="p-2!"
                     onclick={() => {
                         expanded = !expanded;
-                        console.log(player);
                     }}
                 >
                     {#if !expanded}

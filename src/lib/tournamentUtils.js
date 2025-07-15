@@ -24,7 +24,7 @@ export function nodesGenerator (depth, players, match_items) {
     for (let i = 0; i < 2 ** (depth - 1 - level); i++) {
       const position = matchPosition(depth, level, i, matchWidth, playerHeight)
       let newMatch = {
-        id: `${i + 2 ** (depth - 1 - level) - 1}`,//`${i + 2 ** (depth - 1 - level)}`,
+        id: `${i + 2 ** (depth - 1 - level) - 1}`,
         type: "matchNode",
         position,
         dragHandle: 'no-drag',
