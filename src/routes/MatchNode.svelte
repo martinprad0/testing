@@ -38,7 +38,7 @@
     const playerHeight = "50px";
     const flipDurationMs = 100;
 
-    let borderStyle = $derived(items.length > 0 ? '' : 'box-sizing: border-box; border: 1px solid blue')
+    let emptyStyle = $derived(items.length > 0 ? '' : 'box-sizing: border-box; border: 1px dashed gray; background-color: lightgray')
 </script>
 
 <Handle type="target" position={Position.Left} />
@@ -47,8 +47,8 @@
 <p>{id}</p>
 <section
     class="match"
-    style="--player-height: {playerHeight}; --container-width: {matchWidth}; {borderStyle}"
-    use:dndzone={{ items, flipDurationMs, morphDisabled: true }}
+    style="--player-height: {playerHeight}; --container-width: {matchWidth}; {emptyStyle}"
+    use:dndzone={{ items, flipDurationMs, morphDisabled: false }}
     onconsider={handleDndConsider}
     onfinalize={handleDndFinalize}
 >

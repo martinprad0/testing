@@ -5,7 +5,7 @@
   import MatchNode from "./MatchNode.svelte";
   import "@xyflow/svelte/dist/style.css";
 
-  const depth = 4;
+  const depth = 3;
   const nodeTypes = { matchNode: MatchNode };
 
   let { players = $bindable([]) } = $props();
@@ -18,6 +18,6 @@
   let edges = $state.raw(utils.edgesGenerator(depth));
 </script>
 
-<div style="width: 100vw; height: 70vh">
+<div style="width: 100vw; height: 80vh">
   <SvelteFlow bind:nodes bind:edges {nodeTypes}></SvelteFlow>
 </div>

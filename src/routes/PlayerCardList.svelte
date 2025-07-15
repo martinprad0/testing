@@ -59,9 +59,9 @@
     }
 
     // Constants
-    const containerWidth = "100%";
+    const containerWidth = "100vw";
     const containerHeight = "300px";
-    const itemWidth = "45vw";
+    const itemWidth = "180px";
     const itemHeight = "80px";
     const flipDurationMs = 300;
 
