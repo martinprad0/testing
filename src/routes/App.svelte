@@ -8,7 +8,8 @@
 	import MatchNode from "./MatchNode.svelte";
 
 	// make it reactive with $state
-	let players = $state(playersData);
+	import {players} from '$lib/global';
+	$players = playersData;
 
 	function addExistingPlayers(player_ids) {
 		let player_items = [];
@@ -29,9 +30,9 @@
 
 <br /><br /><br />
 
-<TournamentBracket bind:players></TournamentBracket>
+<TournamentBracket></TournamentBracket>
 
-<PlayerCardList bind:players bind:items={items1}></PlayerCardList>
+<PlayerCardList bind:items={items1}></PlayerCardList>
 
 <style>
 	:global(*) {

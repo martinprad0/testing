@@ -15,12 +15,18 @@
     let {
         item = [],
         currentlyFocused = 0,
-        player = $bindable(),
+        player_id = 0,
         oncopy = () => {},
         ondelete = () => {},
         expanded = $bindable(false),
     } = $props();
     let edit_mode = $state(false);
+    
+    import {players} from '$lib/global';
+    function playerIndices(player_id) {
+        return $players.findIndex((player) => player.id === player_id);
+    }
+    let i = playerIndices(player_id)
 </script>
 
 <div
@@ -31,21 +37,21 @@
     <div
         class="handle"
         style="--height:{`${20 * (expanded ? 1 : 2)}%`}"
-        aria-label="drag-handle for {player.text}"
+        aria-label="drag-handle for {$players[i].name}"
     >
         <!-- Player Name -->
         <div class="flex items-center gap-2 w-1/2">
-            <Badge>{player.id}</Badge>
+            <Badge>{$players[i].id}</Badge>
             {#if !edit_mode}
                 <p
                     class="truncate font-semibold dark:text-white bg-transparent outline-none"
                 >
-                    {player.name}
+                    {$players[i].name}
                 </p>
             {:else}
                 <Input
                     class="truncate font-semibold dark:text-white bg-transparent outline-none"
-                    bind:value={player.name}
+                    bind:value={$players[i].name}
                     autofocus
                     onkeydown={(e) => {
                         if (e.key === "Enter") edit_mode = false;
@@ -58,7 +64,7 @@
         <!-- Buttons -->
         <div class="justify-end flex gap-2 w-full">
             {#if edit_mode}
-                <Button class="p-2!" onclick={() => oncopy?.(player)}>
+                <Button class="p-2!" onclick={() => oncopy?.($players[i])}>
                     <FileCopyOutline class="h-4 w-4" />
                 </Button>
             {/if}
@@ -76,7 +82,7 @@
                     {/if}
                 </Button>
             {:else}
-                <Button class="p-2!" onclick={() => ondelete?.(player)}>
+                <Button class="p-2!" onclick={() => ondelete?.($players[i])}>
                     <CloseOutline class="h-4 w-4" />
                 </Button>
             {/if}
@@ -97,13 +103,13 @@
         </div>
     </div>
     <div class="content" style="--height:{`${60 * (expanded ? 2 : 1)}%`}">
-        {#each Object.entries(player.info) as [key, val]}
+        {#each Object.entries($players[i].info) as [key, val]}
             <div class="flex items-center gap-2 my-2">
                 <span class="font-medium dark:text-white">{key}:</span>
                 {#if edit_mode}
                     <Input
                         clearable
-                        bind:value={player.info[key]}
+                        bind:value={$players[i].info[key]}
                         class="flex-1"
                     />
                 {:else}

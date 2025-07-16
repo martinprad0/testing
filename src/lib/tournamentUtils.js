@@ -15,7 +15,7 @@ function matchPosition(depth, level, i, matchWidth, playerHeight) {
    return { x, y }
 }
 
-export function nodesGenerator (depth, players, match_items) {
+export function nodesGenerator (depth, match_items) {
   let nodes = [];
   for (let level = 0; level < depth; level++) {
     const playerHeight = 50;
@@ -28,7 +28,7 @@ export function nodesGenerator (depth, players, match_items) {
         type: "matchNode",
         position,
         dragHandle: 'no-drag',
-        data: { players, items: match_items[level][i], id: `${i + 2 ** (depth - 1 - level) - 1}` },
+        data: { items: match_items[level][i], id: `${i + 2 ** (depth - 1 - level) - 1}` },
       };
       nodes = [newMatch, ...nodes];
     }

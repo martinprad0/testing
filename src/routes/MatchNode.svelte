@@ -5,20 +5,17 @@
     // Reactive Variables
     interface Item {
         id: string;
-        player_id: string;
+        player_id: number;
     }
 
     let { data }: NodeProps = $props();
-    let players: any[] = (data as any).players ?? [];
-    $inspect(players)
-    let items = $state(((data as any).items ?? []) as Item[]);
-    let position = data.position;
-    let level = data.level;
-    let id = data.id;
+    import {players} from '$lib/global';
 
     function playerIndices(player_id) {
-        return players.findIndex((player) => player.id === player_id);
+        return $players.findIndex((player) => player.id === player_id);
     }
+
+    let items = $state(((data as any).items ?? []) as Item[]);
     let { updateNodeData } = useSvelteFlow();
 
     // Animation
@@ -53,7 +50,7 @@
     onfinalize={handleDndFinalize}
 >
     {#each items as item (item.id)}
-        {@const player = players[playerIndices(item.player_id)]}
+    {@const i = playerIndices(item.player_id)}
         <div
             class="player"
             style="--player-height: {playerHeight};"
@@ -63,7 +60,7 @@
             <p
                     class="truncate font-semibold dark:text-white bg-transparent outline-none"
                 >
-                    {player.name}
+                    {$players[i].name}
                 </p>
         </div>
     {/each}

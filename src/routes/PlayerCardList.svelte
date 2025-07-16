@@ -1,11 +1,20 @@
 <script>
+    // Constants
+    const containerWidth = "100vw";
+    const containerHeight = "300px";
+    const itemWidth = "180px";
+    const itemHeight = "80px";
+    const flipDurationMs = 300;
+
+    // Focus Management
+    let zindex = 1;
+    let currentlyFocused = $state(0);
+    
     // Reactive Variables
-    let { players = $bindable([]), items = $bindable([]) } = $props();
+    import {players} from '$lib/global';
+    let {items = $bindable([]) } = $props();
     let searchQuery = $state("");
 
-    function playerIndices(player_id) {
-        return players.findIndex((player) => player.id === player_id);
-    }
 
     //// Imports
     // Animation
@@ -15,7 +24,7 @@
     import { Button, Search } from "flowbite-svelte";
     import { UserAddOutline, TrashBinOutline } from "flowbite-svelte-icons";
 
-    // Drag and Drop Components
+    // Drag and Drop Components and Handle Functions
     import { dndzone } from "svelte-dnd-action";
     function handleDndConsider(e) {
         items = e.detail.items;
@@ -39,45 +48,31 @@
         items = items.filter((item) => item.player_id !== target_player.id);
     }
 
-    function expandItem(item) {}
-
     function addNewPlayer() {
         let newPlayer = {};
-        newPlayer.id = players.length + 1;
+        newPlayer.id = $players.length + 1;
         newPlayer.name = "Nuevo";
         newPlayer.info = {};
 
-        for (const key of Object.keys(players[0].info)) {
+        for (const key of Object.keys($players[0].info)) {
             newPlayer.info[key] = "";
         }
 
-        players = [...players, newPlayer];
+        $players = [...$players, newPlayer];
         items = [
             { id: crypto.randomUUID(), player_id: newPlayer.id },
             ...items,
         ];
     }
 
-    // Constants
-    const containerWidth = "100vw";
-    const containerHeight = "300px";
-    const itemWidth = "180px";
-    const itemHeight = "80px";
-    const flipDurationMs = 300;
-
-    // Focus Management
-    let zindex = 1;
-    let currentlyFocused = $state(0);
-
-    // Event handler
     function sortItems() {
         items = [...items].sort((a, b) => {
             const nameA =
-                players
+                $players
                     .find((p) => p.id === a.player_id)
                     ?.name?.toLowerCase() ?? "";
             const nameB =
-                players
+                $players
                     .find((p) => p.id === b.player_id)
                     ?.name?.toLowerCase() ?? "";
             const query = searchQuery.toLowerCase();
@@ -92,27 +87,34 @@
             return matchA - matchB;
         });
     }
+
+    
 </script>
 
+
 <div>
+    <!-- Control Panel -->
     <div class="flex items-center justify-between mb-4 gap-4">
+        <!-- Add new player -->
         <Button class="p-2!" onclick={addNewPlayer}
             ><UserAddOutline class="h-4 w-4" /></Button
         >
+        <!-- Search -->
         <Search
             placeholder="Search..."
             bind:value={searchQuery}
             oninput={(e) => sortItems()}
         />
+        <!-- Trash -->
         <div class="relative w-1/4 h-12 flex justify-center items-center">
-            <!-- your dnd zone covers the full container but centers its items -->
+            <!-- Trash DnD zone-->
             <section
                 class="absolute inset-0 flex justify-center items-center"
                 style="height: 50px;"
                 use:dndzone={{ items, flipDurationMs, morphDisabled: true }}
             ></section>
 
-            <!-- the trash icon sits in the very center -->
+            <!-- Trash Icon -->
             <TrashBinOutline class="h-5 w-5 text-white" />
         </div>
     </div>
@@ -139,7 +141,7 @@
                     e.currentTarget.click()}
             >
                 <PlayerCard
-                    bind:player={players[playerIndices(item.player_id)]}
+                    player_id={item.player_id}
                     {currentlyFocused}
                     {item}
                     oncopy={copyItem}
