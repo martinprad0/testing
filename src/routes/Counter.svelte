@@ -10,6 +10,7 @@
 
     async function loadItems() {
         const snap = await getDocs(playersRef);
+        $players = [];
         $players = snap.docs
             .map((doc) => {
                 const data = doc.data();
