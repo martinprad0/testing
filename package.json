@@ -36,6 +36,7 @@
 	},
 	"dependencies": {
 		"@xyflow/svelte": "^1.2.2",
+		"firebase": "^12.0.0",
 		"svelte-dnd-action": "^0.9.63"
 	}
 }

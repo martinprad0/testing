@@ -1,34 +1,29 @@
-export function matchItemsGenerator (depth) {
-    return Array.from({ length: depth }, (_, level) =>
-      Array.from({ length: 2 ** (depth - 1 - level) }, (_, i) => []),
-    );
-}
-
-function matchPosition(depth, level, i, matchWidth, playerHeight) {
+function matchPosition(depth, level, j, matchWidth, playerHeight) {
   const totalMatches = 2**(depth-1-level);
-  const isOnLeft = i < totalMatches/2 ? -1 : 1;
+  const isOnLeft = j < totalMatches/2 ? -1 : 1;
   const x = isOnLeft*(depth-level-1)*300;
   const y = level < depth - 1 ? (
-    (i -(isOnLeft+1)/2*totalMatches/2) // recenter when you go to the matches on the right
+    (j -(isOnLeft+1)/2*totalMatches/2) // recenter when you go to the matches on the right
      - (2**(depth-2-level)-1)/2) * 2**(level+1) * playerHeight*1.6 // recenter and rescale according to the level
      :0;
    return { x, y }
 }
 
-export function nodesGenerator (depth, match_items) {
+export function nodesGenerator (depth) {
   let nodes = [];
   for (let level = 0; level < depth; level++) {
     const playerHeight = 50;
     const matchWidth = 300
 
-    for (let i = 0; i < 2 ** (depth - 1 - level); i++) {
-      const position = matchPosition(depth, level, i, matchWidth, playerHeight)
+    for (let j = 2 ** (depth - 1 - level)-1; j >= 0; j+=-1) {
+      const position = matchPosition(depth, level, j, matchWidth, playerHeight)
+      const id = j + 2 ** (depth - 1 - level) - 1;
       let newMatch = {
-        id: `${i + 2 ** (depth - 1 - level) - 1}`,
+        id: `${id}`,
         type: "matchNode",
         position,
         dragHandle: 'no-drag',
-        data: { items: match_items[level][i], id: `${i + 2 ** (depth - 1 - level) - 1}` },
+        data: { id: `${id}`, dlevel: depth - 1 - level , j }, // j is the match index inside the level
       };
       nodes = [newMatch, ...nodes];
     }
@@ -40,16 +35,16 @@ export function edgesGenerator (depth) {
   let edges = [];
   for (let level = 0; level < depth-1; level++) {
     const totalMatchesLevel = 2**(depth-1-level);
-    for (let i = 0; i < totalMatchesLevel; i++) {
+    for (let j = 0; j < totalMatchesLevel; j++) {
       
-      const isOnLeft = i < totalMatchesLevel/2;
-      let left_edge = `${i + 2 ** (depth - 1 - level)- 1}`;
-      let right_edge = `${Math.round((i-1)/2) + 2 ** (depth - 1 - level - 1)- 1}`;
+      const isOnLeft = j < totalMatchesLevel/2;
+      let left_edge = `${j + 2 ** (depth - 1 - level)- 1}`;
+      let right_edge = `${Math.round((j-1)/2) + 2 ** (depth - 1 - level - 1)- 1}`;
       if (!isOnLeft) {
         [left_edge, right_edge] = [right_edge, left_edge];
       }
       let newEdge = {
-        id: `e${i + 2 ** (depth - 1 - level)- 1}`,
+        id: `${j + 2 ** (depth - 1 - level)- 1}`,
         source: left_edge,
         target: right_edge,
         type:'step'
@@ -58,4 +53,18 @@ export function edgesGenerator (depth) {
   }
 }
   return edges
+}
+
+export function seedingGenerator(depth) {
+    if (depth <= 1) return [0];
+
+    const half1 = seedingGenerator(depth - 1);
+    const half2 = half1.map(player => 2 ** (depth - 1) - player - 1);
+    const seeding = [];
+
+    for (let i = 0; i < half1.length; i++) {
+        seeding.push(half1[i], half2[i]);
+    }
+
+    return seeding;
 }

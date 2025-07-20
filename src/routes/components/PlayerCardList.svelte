@@ -9,12 +9,16 @@
     // Focus Management
     let zindex = 1;
     let currentlyFocused = $state(0);
-    
-    // Reactive Variables
-    import {players} from '$lib/global';
-    let {items = $bindable([]) } = $props();
-    let searchQuery = $state("");
 
+    // Reactive Variables
+    import { players, matches } from "$lib/global";
+    let items = $state([]);
+    function resetItems() {
+        items = $players.map(player => ({id:crypto.randomUUID(), player_id: player.id}));
+	}
+    resetItems()
+    
+    let searchQuery = $state("");
 
     //// Imports
     // Animation
@@ -22,7 +26,12 @@
 
     // Flowbite Components
     import { Button, Search } from "flowbite-svelte";
-    import { UserAddOutline, TrashBinOutline } from "flowbite-svelte-icons";
+    import {
+        UserAddOutline,
+        TrashBinOutline,
+        SortOutline,
+        RefreshOutline
+    } from "flowbite-svelte-icons";
 
     // Drag and Drop Components and Handle Functions
     import { dndzone } from "svelte-dnd-action";
@@ -46,11 +55,22 @@
 
     function deleteItemPlayer(target_player) {
         items = items.filter((item) => item.player_id !== target_player.id);
+        for (let i = 0; i < $matches.length; i++) {
+            $matches[i].items = $matches[i].items.filter(
+                (item) => item.player_id != target_player.id,
+            );
+        }
+        $players = $players.filter((player) => player.id != target_player.id);
     }
 
     function addNewPlayer() {
         let newPlayer = {};
-        newPlayer.id = $players.length + 1;
+        newPlayer.id = Math.min(
+            ...Array.from(
+                { length: $players.length + 1 },
+                (_, i) => i + 1,
+            ).filter((i) => !$players.some((p) => p.id === i)),
+        );
         newPlayer.name = "Nuevo";
         newPlayer.info = {};
 
@@ -65,7 +85,7 @@
         ];
     }
 
-    function sortItems() {
+    function sortItemsBySearch() {
         items = [...items].sort((a, b) => {
             const nameA =
                 $players
@@ -88,9 +108,18 @@
         });
     }
 
+    function sortItemsByAge() {
+        items = [...items].sort((a, b) => {
+            const ageA =
+                $players.find((p) => p.id === a.player_id)?.info.age ?? 0;
+            const ageB =
+                $players.find((p) => p.id === b.player_id)?.info.age ?? 0;
+            return ageB - ageA;
+        });
+    }
+
     
 </script>
-
 
 <div>
     <!-- Control Panel -->
@@ -99,11 +128,17 @@
         <Button class="p-2!" onclick={addNewPlayer}
             ><UserAddOutline class="h-4 w-4" /></Button
         >
+        <Button class="p-2!" onclick={sortItemsByAge}
+            ><SortOutline class="h-4 w-4" /></Button
+        >
+        <Button class="p-2!" onclick={resetItems}
+            ><RefreshOutline class="h-4 w-4" /></Button
+        >
         <!-- Search -->
         <Search
             placeholder="Search..."
             bind:value={searchQuery}
-            oninput={(e) => sortItems()}
+            oninput={(e) => sortItemsBySearch()}
         />
         <!-- Trash -->
         <div class="relative w-1/4 h-12 flex justify-center items-center">
@@ -142,8 +177,6 @@
             >
                 <PlayerCard
                     player_id={item.player_id}
-                    {currentlyFocused}
-                    {item}
                     oncopy={copyItem}
                     ondelete={deleteItemPlayer}
                 />

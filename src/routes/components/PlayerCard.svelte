@@ -13,25 +13,33 @@
 
     /** @type {{ id?: number, name?: string, info?: any, level?: number, score?: number }} */
     let {
-        item = [],
-        currentlyFocused = 0,
         player_id = 0,
         oncopy = () => {},
         ondelete = () => {},
-        expanded = $bindable(false),
     } = $props();
+
+
     let edit_mode = $state(false);
+    let expanded = $state(false);
     
-    import {players} from '$lib/global';
-    function playerIndices(player_id) {
+    import {matches, players} from '$lib/global';
+
+    function playerIndex(player_id) {
         return $players.findIndex((player) => player.id === player_id);
     }
-    let i = playerIndices(player_id)
+    let i = $derived(playerIndex(player_id))
 </script>
+
+<!-- <svelte:window  on:keydown|enter={() => { 
+  expanded = false; 
+  edit_mode = false; 
+}}/> -->
+
 
 <div
     class="playerCard"
     style="--height:{`${100 * (expanded ? 2 : 1)}%`}; --width:{`${100 * (expanded ? 2 : 1)}%`}"
+    
 >
     <!-- Handle Elements -->
     <div
@@ -53,9 +61,6 @@
                     class="truncate font-semibold dark:text-white bg-transparent outline-none"
                     bind:value={$players[i].name}
                     autofocus
-                    onkeydown={(e) => {
-                        if (e.key === "Enter") edit_mode = false;
-                    }}
                 />
             {/if}
             
