@@ -10,7 +10,6 @@
     let j = data.j;
     // @ts-ignore:
     let id = `${j + 2 ** dlevel - 1}`;
-
     // Match logic function
     function matchIndex(id) {
         let idx = $matches.findIndex((match) => match.id === id);

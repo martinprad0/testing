@@ -5,13 +5,12 @@
 	import TournamentBracket from "./components/TournamentBracket.svelte";
 
 	// Players List variable initialization
+	import { players, matches, depth } from "$lib/global";
 	import { playersData } from "$lib/playersDemo1.js";
-	import { players } from "$lib/global";
 	$players = playersData;
 
 	// Matches List variable initialization
     import { Item } from "$lib/types/Item";
-    import Counter from "./Counter.svelte";
 
 	function displayAllPlayers(player_ids) {
 		let player_items = [];
@@ -20,9 +19,9 @@
 		}
 		return player_items;
 	}
+	$inspect($matches)
 </script>
 
-<Counter></Counter>
 
 <TournamentBracket></TournamentBracket>
 

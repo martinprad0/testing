@@ -11,13 +11,16 @@
     let currentlyFocused = $state(0);
 
     // Reactive Variables
-    import { players, matches } from "$lib/global";
+    import { players, matches, depth } from "$lib/global";
     let items = $state([]);
     function resetItems() {
-        items = $players.map(player => ({id:crypto.randomUUID(), player_id: player.id}));
-	}
-    resetItems()
-    
+        items = $players.map((player) => ({
+            id: crypto.randomUUID(),
+            player_id: player.id,
+        }));
+    }
+    resetItems();
+
     let searchQuery = $state("");
 
     //// Imports
@@ -30,7 +33,9 @@
         UserAddOutline,
         TrashBinOutline,
         SortOutline,
-        RefreshOutline
+        RefreshOutline,
+        UploadOutline,
+        DownloadOutline,
     } from "flowbite-svelte-icons";
 
     // Drag and Drop Components and Handle Functions
@@ -108,17 +113,24 @@
         });
     }
 
-    function sortItemsByAge() {
+    function sortItemsByScore() {
         items = [...items].sort((a, b) => {
             const ageA =
-                $players.find((p) => p.id === a.player_id)?.info.age ?? 0;
+                $players.find((p) => p.id === a.player_id)?.info.score ?? 0;
             const ageB =
-                $players.find((p) => p.id === b.player_id)?.info.age ?? 0;
+                $players.find((p) => p.id === b.player_id)?.info.score ?? 0;
             return ageB - ageA;
         });
     }
 
-    
+    // Firebase Functions
+    import { loadGame, pushGame } from "$lib/global";
+
+    import { onMount } from "svelte";
+    onMount(async () => {
+        await loadGame();
+        resetItems();
+    });
 </script>
 
 <div>
@@ -128,20 +140,35 @@
         <Button class="p-2!" onclick={addNewPlayer}
             ><UserAddOutline class="h-4 w-4" /></Button
         >
-        <Button class="p-2!" onclick={sortItemsByAge}
+        <Button class="p-2!" onclick={sortItemsByScore}
             ><SortOutline class="h-4 w-4" /></Button
         >
         <Button class="p-2!" onclick={resetItems}
             ><RefreshOutline class="h-4 w-4" /></Button
         >
+
         <!-- Search -->
         <Search
+            class="!text-sm !w-48 !pl-8 !py-1 !px-2"
             placeholder="Search..."
             bind:value={searchQuery}
-            oninput={(e) => sortItemsBySearch()}
+            oninput={sortItemsBySearch}
         />
+
+        <Button
+            class="p-2!"
+            onclick={async () => {
+                await loadGame();
+                resetItems();
+            }}><DownloadOutline class="h-4 w-4" /></Button
+        >
+        <Button
+            class="p-2!"
+            onclick={pushGame}
+            ><UploadOutline class="h-4 w-4" /></Button
+        >
         <!-- Trash -->
-        <div class="relative w-1/4 h-12 flex justify-center items-center">
+        <div class="relative w-1/2 h-12 flex justify-center items-center">
             <!-- Trash DnD zone-->
             <section
                 class="absolute inset-0 flex justify-center items-center"
@@ -197,7 +224,7 @@
         height: var(--container-height);
         gap: 0.5em;
         padding: 0.3em;
-        border: 1px solid greenyellow;
+        /* border: 1px solid greenyellow; */
         overflow-x: auto;
     }
     .playerCard {
