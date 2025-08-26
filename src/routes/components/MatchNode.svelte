@@ -29,7 +29,7 @@
     const matchWidth = "200px";
     const playerHeight = "50px";
     const flipDurationMs = 100;
-    const i = matchIndex(id);
+    let i = matchIndex(id);
 
     function addWinner(player_id) {
         const index_next_round = matchIndex(
@@ -77,11 +77,10 @@
     );
 
     $effect(() => {
-        const match = $matches[i];
-        if (match.items.length === 0 && match.winner !== 0) {
-            match.winner = 0;
-            $matches = [...$matches]; // trigger reactivity without infinite loop
+        if ($matches[i].id != id) {
+            i = matchIndex(id);
         }
+
     });
 </script>
 
