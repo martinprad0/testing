@@ -1,3 +1,4 @@
+// src/lib/types/Items.ts
 export class Item {
   id: string
   player_id: number

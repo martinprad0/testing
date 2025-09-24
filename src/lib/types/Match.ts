@@ -1,3 +1,4 @@
+// src/lib/types/Match.ts
 import type { Item } from '$lib/types/Item'
 
 export class Match {

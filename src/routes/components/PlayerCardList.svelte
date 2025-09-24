@@ -1,3 +1,4 @@
+<!-- src/routes/components/PlayerCardList.svelte -->
 <script>
     // Constants
     const containerWidth = "100vw";
@@ -28,7 +29,7 @@
     import { flip } from "svelte/animate";
 
     // Flowbite Components
-    import { Button, Search } from "flowbite-svelte";
+    import { Button, Search, Input } from "flowbite-svelte";
     import {
         UserAddOutline,
         TrashBinOutline,
@@ -126,14 +127,64 @@
     // Firebase Functions
     import { loadGame, pushGame } from "$lib/global";
 
+    let collectionId = $state("openstyle");
+
+    async function handleLoadGame(collectionId) {
+        await loadGame(collectionId); // Wait for the game to load
+        resetItems(); // Then reset items with the loaded players
+        console.log($players);
+        console.log($matches);
+    }
+
+    // Handler for pushGame with user feedback and validation
+    async function handlePushGame(collectionId) {
+        // Input validation
+        if (!collectionId?.trim()) {
+            console.error("Collection ID is required");
+            alert("Please provide a valid collection ID");
+            return;
+        }
+
+        // Check if we have data to save
+        const currentPlayers = $players;
+        const currentMatches = $matches;
+
+        if (currentPlayers.length === 0) {
+            console.warn("No players to save");
+            alert("Cannot save game: No players found");
+            return;
+        }
+
+        try {
+            // Show loading state (you can replace with your UI loading indicator)
+            console.log("Saving game...");
+
+            // Call the main pushGame function
+            await pushGame(collectionId);
+
+            // Success feedback
+            console.log("Game saved successfully!");
+        } catch (error) {
+            // Error handling with user feedback
+            console.error("Failed to save game:", error);
+
+            // Show user-friendly error message
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred";
+            alert(`Failed to save game: ${errorMessage}`);
+        }
+    }
+
     import { onMount } from "svelte";
+    import { collection } from "firebase/firestore";
     onMount(async () => {
-        await loadGame();
         resetItems();
     });
 </script>
 
-<div>
+<div style="background-color: rgba(25,25,112,0.6);;">
     <!-- Control Panel -->
     <div class="flex items-center justify-between mb-4 gap-4">
         <!-- Add new player -->
@@ -155,17 +206,23 @@
             oninput={sortItemsBySearch}
         />
 
+        <Input
+            class="!text-sm !w-48 !pl-8 !py-1 !px-2"
+            bind:value={collectionId}
+            placeholder="Enter game ID..."
+        />
+
         <Button
             class="p-2!"
             onclick={async () => {
-                await loadGame();
-                resetItems();
+                await handleLoadGame(collectionId);
             }}><DownloadOutline class="h-4 w-4" /></Button
         >
         <Button
             class="p-2!"
-            onclick={pushGame}
-            ><UploadOutline class="h-4 w-4" /></Button
+            onclick={async () => {
+                await handlePushGame(collectionId);
+            }}><UploadOutline class="h-4 w-4" /></Button
         >
         <!-- Trash -->
         <div class="relative w-1/2 h-12 flex justify-center items-center">

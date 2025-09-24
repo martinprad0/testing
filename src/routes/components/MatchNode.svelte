@@ -84,7 +84,7 @@
     });
 </script>
 
-<p>{id}</p>
+<p>{id}, {$matches[i].id}, {matchIndex(id)}, {i}</p>
 <Handle type="target" position={Position.Left}  />
 <Handle type="source" position={Position.Right} />
 <section

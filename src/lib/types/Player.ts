@@ -1,3 +1,4 @@
+// src/lib/types/Player.ts
 export class Player {
 	id: number;
 	name: string;

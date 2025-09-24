@@ -19,7 +19,6 @@
 		}
 		return player_items;
 	}
-	$inspect($matches)
 </script>
 
 
