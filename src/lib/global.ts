@@ -3,10 +3,12 @@ import { collection, setDoc, doc, getDoc } from "firebase/firestore";
 import { writable } from "svelte/store";
 import type { Player } from "$lib/types/Player";
 import type { Match } from "$lib/types/Match";
+import type { Message } from "$lib/types/Message";
 
 export const players = writable<Player[]>([]);
 export const matches = writable<Match[]>([]);
 export const depth = writable(5);
+export const messages = writable<Message[]>([]);
 
 // Type guards for validation
 const isValidPlayer = (obj: any): obj is Player => {
@@ -24,6 +26,54 @@ const isValidMatch = (obj: any): obj is Match => {
     Array.isArray(obj.items) &&
     typeof obj.winner === 'number';
 };
+
+const isValidMessage = (obj: any): obj is Message => {
+  return obj &&
+    typeof obj === 'object' &&
+    typeof obj.id === 'number' &&
+    typeof obj.title === 'string' &&
+    typeof obj.subtitle === 'string' &&
+    typeof obj.date === 'string';
+};
+
+// Load messages from Firebase
+export async function loadMessages(): Promise<void> {
+  try {
+    console.log('Loading messages from Firebase...');
+    
+    const messagesSnap = await getDoc(doc(db, "global", "messages"));
+    
+    if (!messagesSnap.exists()) {
+      console.warn('Messages document not found');
+      messages.set([]);
+      return;
+    }
+
+    const messagesData = messagesSnap.data() ?? {};
+    
+    // Transform Firebase map to array
+    const messageValues = Object.values(messagesData);
+    const validMessages = messageValues
+      .filter(isValidMessage)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Sort by date, newest first
+    
+    messages.set(validMessages);
+    
+    console.log(`Loaded ${validMessages.length} messages`);
+    
+  } catch (error) {
+    console.error('Failed to load messages:', error);
+    messages.set([]);
+    
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error loading messages';
+    
+    throw new Error(`Failed to load messages: ${errorMessage}`);
+  }
+}
+
+loadMessages()
 
 export async function loadGame(gameId: string): Promise<void> {
   // Input validation
@@ -208,5 +258,35 @@ export async function pushGame(gameId: string): Promise<void> {
       : 'Unknown error saving game data';
     
     throw new Error(`Failed to save game ${gameId}: ${errorMessage}`);
+  }
+}
+
+export async function pushMessage(message: Message): Promise<void> {
+  try {
+    console.log('Saving message to Firebase:', message);
+    
+    // Get current messages data
+    const messagesSnap = await getDoc(doc(db, "global", "messages"));
+    const currentMessages = messagesSnap.exists() ? messagesSnap.data() : {};
+    
+    // Add new message using its ID as key
+    const updatedMessages = {
+      ...currentMessages,
+      [message.id]: message
+    };
+    
+    // Save back to Firebase
+    await setDoc(doc(db, "global", "messages"), updatedMessages);
+    
+    console.log('Message saved successfully');
+    
+  } catch (error) {
+    console.error('Failed to save message:', error);
+    
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error saving message';
+    
+    throw new Error(`Failed to save message: ${errorMessage}`);
   }
 }

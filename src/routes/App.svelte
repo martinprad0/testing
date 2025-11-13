@@ -3,6 +3,7 @@
 	// Import UI components
 	import PlayerCardList from "./components/PlayerCardList.svelte";
 	import TournamentBracket from "./components/TournamentBracket.svelte";
+	import MessageBox from "./components/MessageBox.svelte"
 
 	// Players List variable initialization
 	import { players, matches, depth } from "$lib/global";
@@ -19,12 +20,15 @@
 		}
 		return player_items;
 	}
+
 </script>
 
 
 <TournamentBracket></TournamentBracket>
 
 <PlayerCardList></PlayerCardList>
+
+<MessageBox></MessageBox>
 
 <style>
 	:global(*) {
